@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>寶來時刻</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg: #0a0e15;
+    --bg-soft: #0d1219;
+    --surface: #131a25;
+    --surface-2: #182130;
+    --line: rgba(232,236,245,0.09);
+    --line-strong: rgba(232,236,245,0.20);
+    --text: #e9ecf4;
+    --text-dim: #9aa4ba;
+    --text-faint: #6b7488;
+
+    --gold: #c9a25c;
+    --gold-soft: rgba(201,162,92,0.13);
+    --gold-line: rgba(201,162,92,0.38);
+
+    --crimson: #b0524a;
+    --crimson-soft: rgba(176,82,74,0.14);
+    --crimson-line: rgba(176,82,74,0.4);
+
+    --teal: #4f9088;
+    --teal-soft: rgba(79,144,136,0.14);
+    --teal-line: rgba(79,144,136,0.4);
+
+    --blue: #6485ab;
+    --blue-soft: rgba(100,133,171,0.14);
+    --blue-line: rgba(100,133,171,0.4);
+
+    --font-display: 'Noto Serif TC', 'Source Serif 4', serif;
+    --font-body: 'Noto Sans TC', 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  ::selection{ background: var(--gold-soft); color: var(--gold); }
+
+  a{ color: inherit; }
+  img{ max-width: 100%; }
+
+  h1,h2,h3,h4{ font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; }
+  p{ margin: 0; }
+
+  .container{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 64px);
+  }
+
+  section{
+    position: relative;
+    padding: clamp(64px, 10vw, 128px) 0;
+    border-top: 1px solid var(--line);
+  }
+  section:first-of-type{ border-top: none; }
+
+  .eyebrow{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot{ width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .eyebrow.c-case{ color: var(--crimson); }
+  .eyebrow.c-product{ color: var(--gold); }
+  .eyebrow.c-analysis{ color: var(--teal); }
+  .eyebrow.c-mgmt{ color: var(--blue); }
+
+  .section-head{
+    max-width: 780px;
+    margin-bottom: clamp(36px, 6vw, 64px);
+  }
+  .section-title{
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .section-lede{
+    margin-top: 16px;
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--text-dim);
+    max-width: 56em;
+  }
+
+  .reveal{ opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.is-visible{ opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---------- top chrome ---------- */
+  .progress-rail{
+    position: fixed; top: 0; left: 0; width: 100%; height: 2px;
+    background: var(--line); z-index: 60;
+  }
+  .progress-rail__fill{
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--crimson), var(--gold));
+  }
+  .topbar{
+    position: fixed; top: 0; left: 0; right: 0; z-index: 55;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px,5vw,40px) 0;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+  .topbar__mark{ color: var(--text-dim); }
+  .topbar__section{ text-transform: uppercase; }
+
+  .dotnav{
+    position: fixed; right: clamp(14px, 3vw, 34px); top: 50%; transform: translateY(-50%);
+    z-index: 55; display: flex; flex-direction: column; gap: 16px;
+  }
+  .dotnav a{
+    position: relative; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--line-strong); display: block; text-decoration: none;
+    transition: background .25s ease, transform .25s ease;
+  }
+  .dotnav a.active{ background: var(--gold); transform: scale(1.3); }
+  .dotnav a .tip{
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-mono); font-size: 11px; white-space: nowrap;
+    color: var(--text-dim); opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .dotnav a:hover .tip, .dotnav a.active .tip{ opacity: 1; }
+  @media (max-width: 900px){ .dotnav{ display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding-top: clamp(120px, 16vw, 180px);
+    padding-bottom: clamp(72px, 10vw, 120px);
+    border-top: none;
+    overflow: hidden;
+  }
+  .hero__canvas-wrap{
+    position: absolute; inset: 0; z-index: 0;
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 96%);
+            mask-image: linear-gradient(to bottom, black 0%, black 55%, transparent 96%);
+  }
+  #marketCanvas{ width: 100%; height: 100%; display: block; opacity: 0.55; }
+  .hero__content{ position: relative; z-index: 2; }
+  .hero__kicker{
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--gold);
+    border: 1px solid var(--gold-line); background: var(--gold-soft);
+    padding: 7px 14px; border-radius: 100px; margin-bottom: 30px;
+  }
+  .hero__question{
+    font-size: clamp(28px, 4.4vw, 52px);
+    line-height: 1.4;
+    max-width: 18em;
+    letter-spacing: -0.01em;
+  }
+  .hero__question em{ font-style: normal; color: var(--gold); }
+  .hero__thesis{
+    margin-top: 30px;
+    font-size: clamp(16px, 1.7vw, 19px);
+    line-height: 1.9;
+    color: var(--text-dim);
+    max-width: 42em;
+    border-left: 2px solid var(--gold-line);
+    padding-left: 20px;
+  }
+  .hero__meta{
+    margin-top: 48px;
+    display: flex; flex-wrap: wrap; gap: 28px 44px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-faint);
+  }
+  .hero__meta div span{ display: block; }
+  .hero__meta .label{ text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; color: var(--text-faint); }
+  .hero__meta .value{ color: var(--text-dim); font-size: 13px; }
+  .hero__scroll{
+    margin-top: 64px; display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-faint);
+  }
+  .hero__scroll .arrow{ animation: bob 2s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(5px);} }
+  @media (prefers-reduced-motion: reduce){ .hero__scroll .arrow{ animation: none; } }
+
+  /* ---------- chips / badges ---------- */
+  .chip{
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em;
+    padding: 6px 12px; border-radius: 100px;
+    border: 1px solid var(--line-strong); color: var(--text-dim);
+  }
+  .act-badge{
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 5px 11px; border-radius: 100px; border: 1px solid transparent;
+  }
+  .act-badge .dot{ width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+  .act-badge--case{ color: var(--crimson); background: var(--crimson-soft); border-color: var(--crimson-line); }
+  .act-badge--product{ color: var(--gold); background: var(--gold-soft); border-color: var(--gold-line); }
+  .act-badge--analysis{ color: var(--teal); background: var(--teal-soft); border-color: var(--teal-line); }
+  .act-badge--mgmt{ color: var(--blue); background: var(--blue-soft); border-color: var(--blue-line); }
+  .act-badge--cross{ color: var(--text-dim); background: transparent; border-color: var(--line-strong); }
+
+  /* ---------- storyline ---------- */
+  .chapter{
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: clamp(24px, 4vw, 56px);
+    padding: 48px 0;
+    border-top: 1px solid var(--line);
+  }
+  .chapter:first-child{ border-top: none; padding-top: 0; }
+  .chapter__side{ display: flex; flex-direction: column; gap: 14px; }
+  .chapter__num{ font-family: var(--font-mono); font-size: 13px; color: var(--text-faint); letter-spacing: .06em; }
+  .chapter__name{ font-family: var(--font-display); font-size: 22px; font-weight: 700; }
+  .chapter__question{
+    font-family: var(--font-display); font-style: normal; font-weight: 600;
+    font-size: clamp(19px, 2.1vw, 24px); line-height: 1.55; margin-bottom: 22px; max-width: 34em;
+  }
+  .chapter__question::before{ content: '「'; color: var(--text-faint); }
+  .chapter__question::after{ content: '」'; color: var(--text-faint); }
+  .chapter__body p{ color: var(--text-dim); font-size: 15px; line-height: 1.85; max-width: 46em; }
+  .chapter__concept{
+    margin-top: 18px; font-size: 14px; color: var(--text-dim);
+    background: var(--surface); border: 1px solid var(--line); border-left: 3px solid currentColor;
+    padding: 14px 18px; border-radius: 4px; max-width: 46em;
+  }
+
+  .timeline{ display: flex; flex-wrap: wrap; gap: 0; margin: 26px 0 6px; }
+  .timeline__item{
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px 10px 0;
+  }
+  .timeline__item .yr{ font-family: var(--font-mono); font-size: 13px; color: var(--crimson); }
+  .timeline__item .desc{ font-size: 13.5px; color: var(--text-dim); }
+  .timeline__arrow{ color: var(--text-faint); padding: 0 4px; font-family: var(--font-mono); }
+
+  .product-compare{ display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 24px; }
+  @media (max-width: 700px){ .product-compare{ grid-template-columns: 1fr; } }
+  .product-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px 24px;
+  }
+  .product-card h4{ font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+  .product-card p{ font-size: 14px; color: var(--text-dim); line-height: 1.8; }
+
+  .prop-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  @media (max-width: 860px){ .prop-grid{ grid-template-columns: 1fr; } }
+  .prop-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 24px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .prop-card__label{ font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+  .prop-card__title{ font-family: var(--font-display); font-weight: 700; font-size: 17px; }
+  .prop-card__body{ font-size: 13.5px; color: var(--text-dim); line-height: 1.8; }
+
+  .action-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+  @media (max-width: 700px){ .action-grid{ grid-template-columns: 1fr; } }
+  .action-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 22px 24px;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .action-card__num{ font-family: var(--font-mono); font-size: 20px; color: var(--blue); flex: none; }
+  .action-card__title{ font-family: var(--font-display); font-weight: 700; font-size: 16px; margin-bottom: 6px; }
+  .action-card__body{ font-size: 13.5px; color: var(--text-dim); line-height: 1.75; }
+
+  /* ---------- architecture / roadmap ---------- */
+  .legend{ display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
+
+  .roadmap{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+  }
+  .rm-card{
+    position: relative;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px 18px 16px; min-height: 148px;
+    display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+    border-top: 2px solid var(--line-strong);
+    transition: border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+  .rm-card:hover{ transform: translateY(-3px); background: var(--surface-2); }
+  .rm-card[data-act="found"]{ border-top-color: var(--line-strong); }
+  .rm-card[data-act="case"]{ border-top-color: var(--crimson); }
+  .rm-card[data-act="product"]{ border-top-color: var(--gold); }
+  .rm-card[data-act="analysis"]{ border-top-color: var(--teal); }
+  .rm-card[data-act="mgmt"]{ border-top-color: var(--blue); }
+  .rm-card__num{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+  .rm-card__title{ font-family: var(--font-display); font-weight: 700; font-size: 15.5px; line-height: 1.5; }
+  .rm-card__desc{ font-size: 12px; color: var(--text-faint); line-height: 1.6; }
+
+  /* ---------- question mapping ---------- */
+  .map-table{ width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  .map-table th{
+    text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-faint); font-weight: 500; padding: 0 16px 14px; border-bottom: 1px solid var(--line-strong);
+  }
+  .map-table td{ padding: 18px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .map-table tr:hover td{ background: var(--surface); }
+  .map-table .qid{ font-family: var(--font-mono); color: var(--text-faint); font-size: 13px; white-space: nowrap; }
+  .map-table .qtext{ color: var(--text); }
+  .map-table .qarrow{ color: var(--text-faint); font-family: var(--font-mono); padding-right: 8px; }
+  .map-table .qtheme{ color: var(--teal); font-weight: 600; white-space: nowrap; }
+  .map-wrap{ overflow-x: auto; }
+  .map-callout{
+    margin-top: 32px; display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-display); font-size: clamp(16px, 1.8vw, 20px); color: var(--gold);
+    border-top: 1px solid var(--line); padding-top: 26px;
+  }
+  .map-callout::before{ content: '—'; color: var(--text-faint); font-family: var(--font-mono); }
+
+  /* ---------- insights ---------- */
+  .insight-stack{ display: flex; flex-direction: column; gap: 16px; }
+  .insight-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: clamp(24px, 4vw, 40px); display: grid; grid-template-columns: 100px 1fr; gap: clamp(16px, 3vw, 40px);
+    border-left: 3px solid var(--teal);
+  }
+  @media (max-width: 700px){ .insight-card{ grid-template-columns: 1fr; } }
+  .insight-card__num{ font-family: var(--font-mono); font-size: 34px; color: var(--teal); line-height: 1; opacity: .8; }
+  .insight-card__title{ font-family: var(--font-display); font-weight: 700; font-size: clamp(19px, 2.2vw, 24px); margin-bottom: 12px; }
+  .insight-card__body{ color: var(--text-dim); font-size: 14.5px; line-height: 1.9; max-width: 52em; }
+
+  .formula{
+    margin-top: 56px; padding-top: 44px; border-top: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px;
+  }
+  .formula__term{
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    padding: 16px 18px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface);
+    min-width: 118px;
+  }
+  .formula__term.result{ border-color: var(--gold-line); background: var(--gold-soft); }
+  .formula__term .en{ font-family: var(--font-mono); font-size: 13px; color: var(--text); text-align: center; }
+  .formula__term.result .en{ color: var(--gold); font-weight: 600; }
+  .formula__term .zh{ font-size: 12px; color: var(--text-faint); text-align: center; }
+  .formula__op{ font-family: var(--font-mono); font-size: 20px; color: var(--text-faint); }
+
+  /* ---------- storyboard ---------- */
+  .storyboard{
+    display: flex; gap: 16px; overflow-x: auto; padding-bottom: 20px; margin-top: 8px;
+    scroll-snap-type: x proximity;
+  }
+  .frame{
+    flex: 0 0 auto; width: 260px; scroll-snap-align: start;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 230px;
+    border-top: 2px solid var(--line-strong);
+  }
+  .frame[data-mood="bull"]{ border-top-color: var(--gold); }
+  .frame[data-mood="crash"]{ border-top-color: var(--crimson); }
+  .frame[data-mood="distrust"]{ border-top-color: var(--crimson); }
+  .frame[data-mood="reset"]{ border-top-color: var(--blue); }
+  .frame[data-mood="question"]{ border-top-color: var(--text-faint); background: var(--surface-2); }
+  .frame[data-mood="answer"]{ border-top-color: var(--gold); background: var(--gold-soft); }
+  .frame__time{ font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .04em; }
+  .frame__viz{ height: 46px; display: flex; align-items: flex-end; gap: 3px; }
+  .frame__viz i{ display: block; width: 6px; background: var(--line-strong); border-radius: 1px; }
+  .frame__title{ font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1.5; }
+  .frame__body{ font-size: 12.5px; color: var(--text-dim); line-height: 1.7; }
+  .frame__quote{ font-family: var(--font-display); font-size: 14px; line-height: 1.7; color: var(--text); }
+  .frame-next{
+    flex: 0 0 auto; width: 200px; display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-faint);
+  }
+
+  /* ---------- team workstreams ---------- */
+  .team-note{
+    display: flex; align-items: flex-start; gap: 12px; margin-bottom: 34px;
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; padding: 18px 22px;
+    font-size: 14px; color: var(--text-dim); max-width: 60em;
+  }
+  .team-note b{ color: var(--gold); font-weight: 600; }
+
+  .team-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .ws-card{
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 22px;
+    display: flex; flex-direction: column; gap: 12px; min-height: 210px;
+  }
+  .ws-card__top{ display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .ws-card__letter{ font-family: var(--font-mono); font-size: 22px; color: var(--text-faint); }
+  .ws-card__name{ font-family: var(--font-display); font-weight: 700; font-size: 16.5px; }
+  .ws-card__items{ list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+  .ws-card__items li{ font-size: 12.5px; color: var(--text-dim); padding-left: 14px; position: relative; }
+  .ws-card__items li::before{ content: '·'; position: absolute; left: 0; color: var(--text-faint); }
+  .ws-card__link{ margin-top: auto; }
+
+  .ws-integrate{
+    margin-top: 14px; background: var(--gold-soft); border: 1px solid var(--gold-line); border-radius: 10px;
+    padding: 24px 26px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  .ws-integrate__letter{ font-family: var(--font-mono); font-size: 26px; color: var(--gold); }
+  .ws-integrate__title{ font-family: var(--font-display); font-weight: 700; font-size: 16.5px; margin-bottom: 4px; }
+  .ws-integrate__body{ font-size: 13px; color: var(--text-dim); max-width: 44em; }
+
+  /* ---------- footer ---------- */
+  .foot{ padding: 56px 0 90px; }
+  .foot__grid{ display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+  @media (max-width: 700px){ .foot__grid{ grid-template-columns: 1fr; } }
+  .foot h3{ font-family: var(--font-display); font-size: 19px; margin-bottom: 14px; }
+  .foot ol{ margin: 0; padding-left: 20px; color: var(--text-dim); font-size: 14px; line-height: 2; }
+  .foot__meta{ font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); line-height: 2.2; }
+  .foot__meta .k{ color: var(--text-dim); }
+
+  @media (max-width: 640px){
+    .chapter{ grid-template-columns: 1fr; }
+    .chapter__side{ flex-direction: row; align-items: center; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="progress-rail"><div class="progress-rail__fill" id="progressFill"></div></div>
+<div class="topbar">
+  <span class="topbar__mark">寶來時刻 · CASE PROPOSAL</span>
+  <span class="topbar__section" id="topbarSection">01 / 07 · HERO</span>
+</div>
+<nav class="dotnav" id="dotnav">
+  <a href="#hero" data-label="開場"><span class="tip">開場提案</span></a>
+  <a href="#storyline" data-label="故事線"><span class="tip">Storyline</span></a>
+  <a href="#architecture" data-label="架構"><span class="tip">簡報架構</span></a>
+  <a href="#mapping" data-label="題目"><span class="tip">五題整合</span></a>
+  <a href="#insights" data-label="洞察"><span class="tip">核心洞察</span></a>
+  <a href="#film" data-label="影片"><span class="tip">開場影片</span></a>
+  <a href="#team" data-label="分工"><span class="tip">工作分工</span></a>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__canvas-wrap"><canvas id="marketCanvas"></canvas></div>
+  <div class="container hero__content">
+    <div class="hero__kicker">EMBA 財務管理 · 個案報告提案 — 寶來證券</div>
+    <h1 class="hero__question">金融海嘯後，寶來如何利用<em>結構型商品、行為財務</em>與<em>內部銷售能力</em>，在危機中創造金融創新的商業機會？</h1>
+    <p class="hero__thesis">寶來的成功並非單純因為結構型商品設計較佳，而是掌握金融海嘯後投資人「怕損失、又需要收益」的心理轉折，再配合商品重新設計、內部教育訓練與客戶關係管理，將金融工程轉化成可銷售的解決方案。</p>
+    <div class="hero__meta">
+      <div><span class="label">文件性質</span><span class="value">組內提案　·　非正式課堂簡報</span></div>
+      <div><span class="label">用途</span><span class="value">對齊 Storyline、章節架構與工作分工</span></div>
+      <div><span class="label">版本</span><span class="value">Proposal v0.1　·　2026.09</span></div>
+    </div>
+    <div class="hero__scroll"><span class="arrow">↓</span> 往下捲動，看我們怎麼說這個故事</div>
+  </div>
+</section>
+
+<!-- ============ STORYLINE ============ -->
+<section id="storyline">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>STORYLINE — 四幕結構</div>
+      <h2 class="section-title">整份報告不逐題作答，而是說一個「危機如何變成機會」的故事</h2>
+      <p class="section-lede">五道個案題目最後都會被收進這四幕裡。我們先確定敘事順序，再決定誰負責哪一段研究——順序對了，簡報和口語稿才會一致。</p>
+    </div>
+
+    <div class="chapter reveal">
+      <div class="chapter__side">
+        <span class="chapter__num">CHAPTER 1</span>
+        <span class="act-badge act-badge--case"><span class="dot"></span>CASE</span>
+        <span class="chapter__name">危機出現</span>
+      </div>
+      <div class="chapter__body">
+        <p class="chapter__question" style="color:var(--crimson)">市場最不相信金融商品的時候，寶來為什麼還能重新找到機會？</p>
+        <div class="timeline">
+          <div class="timeline__item"><span class="yr">2007</span><span class="desc">結構型商品熱潮，高收益需求推升發行量</span></div>
+          <span class="timeline__arrow">→</span>
+          <div class="timeline__item"><span class="yr">2008</span><span class="desc">金融海嘯爆發，複雜商品成為信任危機的核心</span></div>
+          <span class="timeline__arrow">→</span>
+          <div class="timeline__item"><span class="yr">2008末</span><span class="desc">投資人信心崩潰，市場對「結構型」三個字避之唯恐不及</span></div>
+          <span class="timeline__arrow">→</span>
+          <div class="timeline__item"><span class="yr">2009</span><span class="desc">市場逐步復甦，資金開始尋找新的收益出口</span></div>
+        </div>
+        <p>這一幕負責交代背景：熱潮、崩盤、信任破產、復甦初期。目的不是重述歷史，而是把「危機」變成後面所有管理命題的起點。</p>
+      </div>
+    </div>
+
+    <div class="chapter reveal">
+      <div class="chapter__side">
+        <span class="chapter__num">CHAPTER 2</span>
+        <span class="act-badge act-badge--product"><span class="dot"></span>PRODUCT</span>
+        <span class="chapter__name">寶來怎麼回應</span>
+      </div>
+      <div class="chapter__body">
+        <p class="chapter__question" style="color:var(--gold)">在信任破產的市場裡，寶來拿什麼重新讓投資人願意下單？</p>
+        <div class="product-compare">
+          <div class="product-card">
+            <h4>PGN</h4>
+            <p>保本型商品，用「本金安全」重建投資人的心理安全感——在信心最脆弱的時候，先解決「怕損失」的問題。</p>
+          </div>
+          <div class="product-card">
+            <h4>ELN</h4>
+            <p>股權連結型商品，用不同的市場情境與風險偏好對應出 ELN1–8 的商品線，補上「怕損失」之後「還需要收益」的缺口。</p>
+          </div>
+        </div>
+        <div class="chapter__concept" style="color:var(--gold)">核心觀念：寶來賣的不只是金融商品，而是「不同風險情境下的解決方案」——商品是載體，情境判斷才是產品力。</div>
+      </div>
+    </div>
+
+    <div class="chapter reveal">
+      <div class="chapter__side">
+        <span class="chapter__num">CHAPTER 3</span>
+        <span class="act-badge act-badge--analysis"><span class="dot"></span>ANALYSIS</span>
+        <span class="chapter__name">為什麼成功</span>
+      </div>
+      <div class="chapter__body">
+        <p class="chapter__question" style="color:var(--teal)">同樣的市場、同樣的商品工具，為什麼是寶來把機會變成生意？</p>
+        <p>我們把答案整合成三個互相支撐的管理命題，而不是三個獨立優點——少了任何一個，另外兩個都撐不住。</p>
+        <div class="prop-grid">
+          <div class="prop-card">
+            <span class="prop-card__label">Market Timing</span>
+            <span class="prop-card__title">掌握矛盾需求</span>
+            <span class="prop-card__body">投資人同時「怕風險」又「嫌利率低」——這個矛盾正是結構型商品重新獲得空間的市場條件。</span>
+          </div>
+          <div class="prop-card">
+            <span class="prop-card__label">Behavior × Product Design</span>
+            <span class="prop-card__title">行為財務解釋吸引力</span>
+            <span class="prop-card__body">用損失趨避、參考點、心理帳戶、框架效果，理解商品條款為何「聽起來就想買」。</span>
+          </div>
+          <div class="prop-card">
+            <span class="prop-card__label">Organization × Trust</span>
+            <span class="prop-card__title">商品背後的組織能力</span>
+            <span class="prop-card__body">教育訓練、內部行銷、獎勵制度、客戶教育與售後關係，把商品設計「銷售出去」。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter reveal">
+      <div class="chapter__side">
+        <span class="chapter__num">CHAPTER 4</span>
+        <span class="act-badge act-badge--mgmt"><span class="dot"></span>MANAGEMENT</span>
+        <span class="chapter__name">如果我們是經理人</span>
+      </div>
+      <div class="chapter__body">
+        <p class="chapter__question" style="color:var(--blue)">看懂寶來怎麼贏之後，換作我們接手，要往哪裡調整？</p>
+        <p>這一幕把分析轉成可執行的管理動作，也是全案的收尾——從「寶來做對了什麼」走到「我們會怎麼做」。</p>
+        <div class="action-grid">
+          <div class="action-card"><span class="action-card__num">01</span><div><div class="action-card__title">商品分級與適配</div><div class="action-card__body">依風險屬性分層商品，避免不對稱資訊下的錯配銷售。</div></div></div>
+          <div class="action-card"><span class="action-card__num">02</span><div><div class="action-card__title">壓力測試與極端風險揭露</div><div class="action-card__body">在銷售端就模擬最壞情境，而不是等出事才解釋條款。</div></div></div>
+          <div class="action-card"><span class="action-card__num">03</span><div><div class="action-card__title">顧問式銷售取代佣金導向</div><div class="action-card__body">把銷售誘因從「賣得多」調整為「賣得對」。</div></div></div>
+          <div class="action-card"><span class="action-card__num">04</span><div><div class="action-card__title">產品生命週期與售後追蹤</div><div class="action-card__body">商品賣出不是結束，建立追蹤機制才能留住信任。</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRESENTATION ARCHITECTURE ============ -->
+<section id="architecture">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>PRESENTATION ARCHITECTURE — 14 頁路線圖</div>
+      <h2 class="section-title">正式簡報預計長這樣</h2>
+      <p class="section-lede">這不是最終定稿，而是讓大家在動手做投影片之前，先對齊「每一頁在故事裡的位置」。顏色對應 Storyline 的四幕。</p>
+    </div>
+
+    <div class="legend reveal">
+      <span class="act-badge" style="color:var(--text-dim); border-color:var(--line-strong)"><span class="dot"></span>01–02 開場定調</span>
+      <span class="act-badge act-badge--case"><span class="dot"></span>03–04 CASE 危機</span>
+      <span class="act-badge act-badge--product"><span class="dot"></span>05–06 PRODUCT 商品</span>
+      <span class="act-badge act-badge--analysis"><span class="dot"></span>07–12 ANALYSIS 分析</span>
+      <span class="act-badge act-badge--mgmt"><span class="dot"></span>13–14 MANAGEMENT 管理</span>
+    </div>
+
+    <div class="roadmap reveal">
+      <div class="rm-card" data-act="found"><div class="rm-card__num">01</div><div class="rm-card__title">封面</div><div class="rm-card__desc">提案標題、個案名稱、報告版本</div></div>
+      <div class="rm-card" data-act="found"><div class="rm-card__num">02</div><div class="rm-card__title">Executive Summary</div><div class="rm-card__desc">一頁講完核心論點與三個判斷</div></div>
+      <div class="rm-card" data-act="case"><div class="rm-card__num">03</div><div class="rm-card__title">2007 → 2008 → 2009 市場轉折</div><div class="rm-card__desc">從熱潮到崩盤到復甦的時間軸</div></div>
+      <div class="rm-card" data-act="case"><div class="rm-card__num">04</div><div class="rm-card__title">核心管理問題</div><div class="rm-card__desc">定義本案要回答的管理命題</div></div>
+      <div class="rm-card" data-act="product"><div class="rm-card__num">05</div><div class="rm-card__title">PGN vs. ELN</div><div class="rm-card__desc">兩類商品的結構與風險報酬比較</div></div>
+      <div class="rm-card" data-act="product"><div class="rm-card__num">06</div><div class="rm-card__title">ELN1–8 市場情境與風險分類</div><div class="rm-card__desc">依行情與風險偏好對應商品線</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">07</div><div class="rm-card__title">市場時機為何成為成功關鍵</div><div class="rm-card__desc">Market Timing 的論證</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">08</div><div class="rm-card__title">產品吸引力＋成功商品特質</div><div class="rm-card__desc">連結行為財務與商品設計</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">09</div><div class="rm-card__title">行為財務解析</div><div class="rm-card__desc">損失趨避、參考點、心理帳戶、框架效果</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">10</div><div class="rm-card__title">對從業人員與組織能力的影響</div><div class="rm-card__desc">教育訓練與內部銷售能力</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">11</div><div class="rm-card__title">海嘯後的發行與客戶經營模式</div><div class="rm-card__desc">從商品導向到關係導向</div></div>
+      <div class="rm-card" data-act="analysis"><div class="rm-card__num">12</div><div class="rm-card__title">Product × People × Process × Trust</div><div class="rm-card__desc">四個要素如何互相支撐</div></div>
+      <div class="rm-card" data-act="mgmt"><div class="rm-card__num">13</div><div class="rm-card__title">如果我們是寶來經理人</div><div class="rm-card__desc">四項管理行動建議</div></div>
+      <div class="rm-card" data-act="mgmt"><div class="rm-card__num">14</div><div class="rm-card__title">結論</div><div class="rm-card__desc">回扣核心主張與命題公式</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUESTION MAPPING ============ -->
+<section id="mapping">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>QUESTION MAPPING</div>
+      <h2 class="section-title">個案五題，怎麼收進同一個故事</h2>
+      <p class="section-lede">老師出的五題，我們不打算逐題各寫一段，而是先確認每一題最後落在哪個管理命題——這樣簡報看起來才像一份分析，而不是五份考卷答案的拼接。</p>
+    </div>
+
+    <div class="map-wrap reveal">
+      <table class="map-table">
+        <thead>
+          <tr><th style="width:70px">題號</th><th>個案原題</th><th style="width:40px"></th><th>對應管理命題</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="qid">Q1</td><td class="qtext">寶來的成功與 2008–2009 市場時機的關係</td><td class="qarrow">→</td><td class="qtheme">Market Timing</td></tr>
+          <tr><td class="qid">Q2</td><td class="qtext">寶來為何比其他券商更能吸引投資人</td><td class="qarrow">→</td><td class="qtheme">Product Design × Behavior</td></tr>
+          <tr><td class="qid">Q3</td><td class="qtext">這個案例對券商從業人員的幫助</td><td class="qarrow">→</td><td class="qtheme">Organization Capability</td></tr>
+          <tr><td class="qid">Q4</td><td class="qtext">成功的契約型商品應具備哪些特質</td><td class="qarrow">→</td><td class="qtheme">Product Design × Behavior</td></tr>
+          <tr><td class="qid">Q5</td><td class="qtext">寶來的發行模式與客戶關係經營</td><td class="qarrow">→</td><td class="qtheme">Process × Trust</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="map-callout reveal">五題不是消失，而是從「考題」轉化成「管理命題」。</p>
+  </div>
+</section>
+
+<!-- ============ CORE INSIGHTS ============ -->
+<section id="insights">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>CORE INSIGHTS</div>
+      <h2 class="section-title">本組的三個核心判斷</h2>
+      <p class="section-lede">這三句話是全案真正要傳達的觀點，其餘所有頁面都是在替它們找證據。</p>
+    </div>
+
+    <div class="insight-stack reveal">
+      <div class="insight-card">
+        <span class="insight-card__num">01</span>
+        <div>
+          <div class="insight-card__title">危機改變需求，而不是消滅需求</div>
+          <p class="insight-card__body">金融海嘯後投資人更怕損失，但低利率又降低存款吸引力，兩股力量夾擊之下，反而產生了新的商品需求空間——市場沒有消失，只是換了一種想被滿足的方式。</p>
+        </div>
+      </div>
+      <div class="insight-card">
+        <span class="insight-card__num">02</span>
+        <div>
+          <div class="insight-card__title">金融創新的價值，不只是工程設計，而是行為設計</div>
+          <p class="insight-card__body">關鍵不在條款有多精密，而在能不能讓投資人清楚理解「什麼情況賺、什麼情況賠、最壞情境是什麼」——聽得懂，才敢買。</p>
+        </div>
+      </div>
+      <div class="insight-card">
+        <span class="insight-card__num">03</span>
+        <div>
+          <div class="insight-card__title">真正難複製的，不是商品，而是組織能力</div>
+          <p class="insight-card__body">Product 容易被同業模仿，但 People、Process、Trust 形成的系統——訓練、銷售紀律、客戶關係——才是短期內學不走的部分。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="formula reveal">
+      <div class="formula__term result"><span class="en">Opportunity</span><span class="zh">機會</span></div>
+      <span class="formula__op">=</span>
+      <div class="formula__term"><span class="en">Market Shift</span><span class="zh">市場轉折</span></div>
+      <span class="formula__op">×</span>
+      <div class="formula__term"><span class="en">Product Design</span><span class="zh">商品設計</span></div>
+      <span class="formula__op">×</span>
+      <div class="formula__term"><span class="en">Behavioral Insight</span><span class="zh">行為洞察</span></div>
+      <span class="formula__op">×</span>
+      <div class="formula__term"><span class="en">Org. Capability</span><span class="zh">組織能力</span></div>
+      <span class="formula__op">×</span>
+      <div class="formula__term"><span class="en">Trust</span><span class="zh">信任</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPENING FILM ============ -->
+<section id="film">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>OPENING FILM CONCEPT</div>
+      <h2 class="section-title">開場影片：60–90 秒，穿越回 2008</h2>
+      <p class="section-lede">正式上台前，先用一段短片把全班拉回那個時空——影片停在一個問題上，真人簡報再接上答案，形成一次轉場。</p>
+    </div>
+
+    <div class="storyboard reveal">
+      <div class="frame" data-mood="bull">
+        <span class="frame__time">00:00 – 00:15</span>
+        <div class="frame__viz"><i style="height:30%"></i><i style="height:42%"></i><i style="height:38%"></i><i style="height:55%"></i><i style="height:50%"></i><i style="height:68%"></i><i style="height:64%"></i><i style="height:80%"></i><i style="height:76%"></i><i style="height:92%"></i></div>
+        <div class="frame__title">2007　牛市與高收益商品熱潮</div>
+        <div class="frame__body">股市屢創新高，結構型商品發行量暴增，投資人搶著追高收益。</div>
+      </div>
+      <div class="frame" data-mood="crash">
+        <span class="frame__time">00:15 – 00:35</span>
+        <div class="frame__viz"><i style="height:92%; background:var(--crimson)"></i><i style="height:70%; background:var(--crimson)"></i><i style="height:78%; background:var(--crimson)"></i><i style="height:44%; background:var(--crimson)"></i><i style="height:50%; background:var(--crimson)"></i><i style="height:22%; background:var(--crimson)"></i><i style="height:30%; background:var(--crimson)"></i><i style="height:12%; background:var(--crimson)"></i><i style="height:18%; background:var(--crimson)"></i><i style="height:8%; background:var(--crimson)"></i></div>
+        <div class="frame__title">2008　雷曼倒閉，全球股災</div>
+        <div class="frame__body">VIX 恐慌指數飆升，新聞畫面切換交易大廳與崩跌線圖，投資人陷入恐慌。</div>
+      </div>
+      <div class="frame" data-mood="distrust">
+        <span class="frame__time">00:35 – 00:50</span>
+        <div class="frame__viz"><i style="height:14%; background:var(--crimson)"></i><i style="height:20%; background:var(--crimson)"></i><i style="height:10%; background:var(--crimson)"></i><i style="height:24%; background:var(--crimson)"></i><i style="height:16%; background:var(--crimson)"></i><i style="height:22%; background:var(--crimson)"></i><i style="height:12%; background:var(--crimson)"></i><i style="height:18%; background:var(--crimson)"></i><i style="height:14%; background:var(--crimson)"></i><i style="height:20%; background:var(--crimson)"></i></div>
+        <div class="frame__title">市場對複雜金融商品失去信任</div>
+        <div class="frame__body">畫面轉為靜默的交易看板與空蕩的營業大廳，「結構型商品」成為敏感詞。</div>
+      </div>
+      <div class="frame" data-mood="reset">
+        <span class="frame__time">00:50 – 01:05</span>
+        <div class="frame__viz"><i style="height:20%; background:var(--blue)"></i><i style="height:28%; background:var(--blue)"></i><i style="height:24%; background:var(--blue)"></i><i style="height:34%; background:var(--blue)"></i><i style="height:30%; background:var(--blue)"></i><i style="height:40%; background:var(--blue)"></i><i style="height:36%; background:var(--blue)"></i><i style="height:44%; background:var(--blue)"></i><i style="height:40%; background:var(--blue)"></i><i style="height:48%; background:var(--blue)"></i></div>
+        <div class="frame__title">進入 2009 年</div>
+        <div class="frame__body">畫面轉亮，年份數字浮現，市場開始緩步找回節奏，但信任還沒回來。</div>
+      </div>
+      <div class="frame" data-mood="question">
+        <span class="frame__time">01:05 – 01:20</span>
+        <div class="frame__quote">「如果你是寶來證券的經理人，此時你會停止金融創新，還是重新設計一套投資人願意相信的商品？」</div>
+        <div class="frame__body">畫面定格於問句，音樂停止，全場安靜三秒。</div>
+      </div>
+      <div class="frame-next">
+        <div>下一幕　·　真人簡報接上<br><span style="color:var(--gold); font-family:var(--font-display); font-size:15px;">「寶來選擇了後者。」</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM WORKSTREAMS ============ -->
+<section id="team">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span>TEAM WORKSTREAMS</div>
+      <h2 class="section-title">工作分配：以研究模組分工，不是切頁數</h2>
+      <p class="section-lede">每個模組先各自把研究做深，最後統一交給整合，而不是每人各做幾頁投影片再直接貼在一起。</p>
+    </div>
+
+    <div class="team-note reveal">先分研究責任，最後再整合成<b>同一個故事</b>與<b>同一套視覺</b>——這是我們刻意不採「每人做幾頁再合併」的原因。</div>
+
+    <div class="team-grid reveal">
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">A</span><span class="act-badge act-badge--case"><span class="dot"></span>Ch.1</span></div>
+        <div class="ws-card__name">個案研究</div>
+        <ul class="ws-card__items"><li>個案摘要</li><li>時間線</li><li>關鍵事件</li></ul>
+      </div>
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">B</span><span class="act-badge act-badge--product"><span class="dot"></span>Ch.2</span></div>
+        <div class="ws-card__name">商品分析</div>
+        <ul class="ws-card__items"><li>PGN</li><li>ELN</li><li>ELN1–8 分類</li></ul>
+      </div>
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">C</span><span class="act-badge act-badge--analysis"><span class="dot"></span>Ch.3</span></div>
+        <div class="ws-card__name">行為財務</div>
+        <ul class="ws-card__items"><li>損失趨避</li><li>框架效果</li><li>參考點</li><li>心理帳戶</li></ul>
+      </div>
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">D</span><span class="act-badge act-badge--analysis"><span class="dot"></span>Ch.3</span></div>
+        <div class="ws-card__name">組織與客戶</div>
+        <ul class="ws-card__items"><li>教育訓練</li><li>內部銷售</li><li>獎勵制度</li><li>客戶經營</li></ul>
+      </div>
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">E</span><span class="act-badge act-badge--mgmt"><span class="dot"></span>Ch.4</span></div>
+        <div class="ws-card__name">管理建議</div>
+        <ul class="ws-card__items"><li>四項經理人行動</li><li>結論</li></ul>
+      </div>
+      <div class="ws-card">
+        <div class="ws-card__top"><span class="ws-card__letter">F</span><span class="act-badge act-badge--cross"><span class="dot"></span>貫穿全案</span></div>
+        <div class="ws-card__name">視覺與影片</div>
+        <ul class="ws-card__items"><li>開場影片</li><li>圖表</li><li>簡報視覺一致性</li></ul>
+      </div>
+    </div>
+
+    <div class="ws-integrate reveal">
+      <span class="ws-integrate__letter">G</span>
+      <div>
+        <div class="ws-integrate__title">統整／Presenter</div>
+        <div class="ws-integrate__body">Storyline、轉場、口語稿、最終整合——A 到 F 的研究成果最後都匯流到這裡，變成同一份簡報、同一個聲音。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<section class="foot" id="foot">
+  <div class="container foot__grid">
+    <div class="reveal">
+      <h3>這次組會，我們要對齊三件事</h3>
+      <ol>
+        <li>是否同意「危機 → 商品 → 分析 → 管理」四幕 Storyline</li>
+        <li>A–G 七個模組的負責人與初步時程</li>
+        <li>下一次進度更新的時間點，以及誰負責統整第一版口語稿</li>
+      </ol>
+    </div>
+    <div class="reveal foot__meta">
+      <div><span class="k">個案</span>　寶來證券：行為財務與金融創新</div>
+      <div><span class="k">文件</span>　單頁提案 / 組內討論用</div>
+      <div><span class="k">版本</span>　v0.1</div>
+      <div><span class="k">更新</span>　2026 年 9 月</div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  // progress bar + topbar section label
+  var fill = document.getElementById('progressFill');
+  var topbarSection = document.getElementById('topbarSection');
+  var sections = [
+    {id:'hero', label:'HERO'},
+    {id:'storyline', label:'STORYLINE'},
+    {id:'architecture', label:'ARCHITECTURE'},
+    {id:'mapping', label:'MAPPING'},
+    {id:'insights', label:'INSIGHTS'},
+    {id:'film', label:'FILM'},
+    {id:'team', label:'TEAM'}
+  ];
+  function onScroll(){
+    var h = document.documentElement;
+    var scrolled = h.scrollTop || document.body.scrollTop;
+    var height = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    var pct = height > 0 ? (scrolled / height) * 100 : 0;
+    fill.style.width = pct + '%';
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // dot nav active state + click scroll
+  var dotnav = document.getElementById('dotnav');
+  var dotLinks = dotnav ? Array.prototype.slice.call(dotnav.querySelectorAll('a')) : [];
+
+  var targets = sections.map(function(s){ return document.getElementById(s.id); }).filter(Boolean);
+
+  if('IntersectionObserver' in window){
+    var navObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var idx = targets.indexOf(entry.target);
+        if(idx === -1) return;
+        if(entry.isIntersecting){
+          dotLinks.forEach(function(a){ a.classList.remove('active'); });
+          if(dotLinks[idx]) dotLinks[idx].classList.add('active');
+          topbarSection.textContent = String(idx+1).padStart(2,'0') + ' / 07 · ' + sections[idx].label;
+        }
+      });
+    }, {rootMargin: '-45% 0px -45% 0px', threshold: 0});
+    targets.forEach(function(t){ navObserver.observe(t); });
+
+    // fade-in reveal
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {threshold: 0.12, rootMargin: '0px 0px -8% 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el){ revealObserver.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('is-visible'); });
+  }
+
+  // hero canvas: 2007-2009 market line
+  var canvas = document.getElementById('marketCanvas');
+  if(canvas && canvas.getContext){
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function resize(){
+      var rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+    }
+
+    // synthetic index path: bull run -> crash -> bottom -> tentative recovery
+    function buildPath(w, h){
+      var points = [];
+      var n = 140;
+      for(var i=0;i<=n;i++){
+        var t = i/n;
+        var y;
+        if(t < 0.32){ // 2007 bull run, choppy rise
+          var local = t/0.32;
+          y = 0.62 - local*0.28 + Math.sin(local*22)*0.025;
+        } else if(t < 0.62){ // crash
+          var local2 = (t-0.32)/0.30;
+          y = 0.34 + local2*0.52 + Math.sin(local2*30)*0.03*(1-local2);
+        } else if(t < 0.78){ // bottom, volatile
+          var local3 = (t-0.62)/0.16;
+          y = 0.86 - Math.sin(local3*10)*0.03;
+        } else { // 2009 tentative recovery
+          var local4 = (t-0.78)/0.22;
+          y = 0.86 - local4*0.22 + Math.sin(local4*14)*0.02;
+        }
+        points.push({x: t*w, y: y*h});
+      }
+      return points;
+    }
+
+    var gridAlpha = 0.06;
+
+    function draw(progress){
+      var w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+
+      // grid
+      ctx.strokeStyle = 'rgba(233,236,244,' + gridAlpha + ')';
+      ctx.lineWidth = 1;
+      var rows = 6;
+      for(var r=0;r<=rows;r++){
+        var gy = (h/rows)*r;
+        ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke();
+      }
+
+      var pts = buildPath(w, h);
+      var count = Math.max(2, Math.floor(pts.length * progress));
+      var visible = pts.slice(0, count);
+
+      // area fill
+      ctx.beginPath();
+      ctx.moveTo(visible[0].x, h);
+      visible.forEach(function(p){ ctx.lineTo(p.x, p.y); });
+      ctx.lineTo(visible[visible.length-1].x, h);
+      ctx.closePath();
+      var grad = ctx.createLinearGradient(0,0,0,h);
+      grad.addColorStop(0, 'rgba(201,162,92,0.16)');
+      grad.addColorStop(1, 'rgba(201,162,92,0)');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // line
+      ctx.beginPath();
+      visible.forEach(function(p,i){ if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y); });
+      ctx.strokeStyle = 'rgba(201,162,92,0.85)';
+      ctx.lineWidth = 1.6 * dpr;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // crash marker at ~0.5
+      var markerIdx = Math.floor(pts.length * 0.5);
+      if(count > markerIdx){
+        var m = pts[markerIdx];
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 3*dpr, 0, Math.PI*2);
+        ctx.fillStyle = '#b0524a';
+        ctx.fill();
+        ctx.font = (11*dpr) + 'px IBM Plex Mono, monospace';
+        ctx.fillStyle = 'rgba(176,82,74,0.9)';
+        ctx.fillText('LEHMAN 2008', m.x + 8*dpr, m.y - 8*dpr);
+      }
+    }
+
+    resize();
+    if(reducedMotion){
+      draw(1);
+    } else {
+      var start = null;
+      var duration = 2600;
+      function frame(ts){
+        if(start === null) start = ts;
+        var progress = Math.min(1, (ts - start) / duration);
+        draw(progress);
+        if(progress < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+    window.addEventListener('resize', function(){ resize(); draw(1); });
+  }
+})();
+</script>
+
+</body>
+</html>
